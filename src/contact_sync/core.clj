@@ -1,7 +1,7 @@
 (ns contact-sync.core
   (:require [compojure.core :refer [defroutes GET POST]]
             [ring.util.http-response :as response]
-            [contact-sync.db :refer [save-contacts get-contacts]]))
+            [contact-sync.db :as db]))
 
 (defn- send-text-response [body]
   (-> (response/ok body)
@@ -12,8 +12,9 @@
       (response/header "Content-Type" "application/json; charset=utf-8")))
 
 (defroutes contact-routes
-  (POST "/upload-contacts" {params :params}
-        (println params)
-        (send-text-response "Contacts updated"))
+  (POST "/upload-contacts" {{email :email
+                             contacts :contactList} :params}
+        (db/save-contacts {:email email :contacts contacts}
+        (send-json-response {:msg "Contacts Updated"}))
   (GET "/contacts" []
-       (send-json-response (get-contacts))))
+       (send-json-response (db/get-contacts))))
