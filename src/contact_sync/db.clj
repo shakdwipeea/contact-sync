@@ -25,10 +25,17 @@
 ;; (select user (with phone-number))
 
 (defn- schema-stmts []
-  (str/split (slurp "resources/create-schema.sql") #"--;;"))
+  (-> "create-schema.sql"
+      clojure.java.io/resource
+      slurp
+      (str/split #"--;;")))
+
 
 (defn create-schema []
-  (map exec-raw (schema-stmts)))
+  (println "Creating schema")
+  (doseq [stmt (schema-stmts)]
+    (exec-raw stmt)))
+
 
 (defn- save-phone-numbers [contact-id phones]
   (insert phone-number

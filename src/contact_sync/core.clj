@@ -14,7 +14,7 @@
 (defroutes contact-routes
   (POST "/upload-contacts" {{email :email
                              contacts :contactList} :params}
-        (db/save-contacts {:email email :contacts contacts}
+        (db/save-contacts {:email email :contacts contacts})
         (send-json-response {:msg "Contacts Updated"}))
   (GET "/contacts" []
        (send-json-response (db/get-contacts))))
