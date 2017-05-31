@@ -11,10 +11,19 @@
   (-> (response/ok body)
       (response/header "Content-Type" "application/json; charset=utf-8")))
 
-(defroutes contact-routes
+(defn- get-contact-handler []
+  (GET "/contacts" []
+       (println "Get conatsc")
+       (send-json-response (db/get-contacts))))
+
+(defn- upload-contact-handler []
   (POST "/upload-contacts" {{email :email
                              contacts :contactList} :params}
         (db/save-contacts {:email email :contacts contacts})
-        (send-json-response {:msg "Contacts Updated"}))
-  (GET "/contacts" []
-       (send-json-response (db/get-contacts))))
+        (send-json-response {:msg "Contacts Updated"})))
+
+(defroutes upload-route
+  (upload-contact-handler))
+
+(defroutes get-route
+  (get-contact-handler))
